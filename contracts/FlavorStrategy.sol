@@ -104,13 +104,13 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
   struct Asset {
     uint price;
     string name;
-  
   }
+
   function getAssetPrices() internal returns (Asset[]) {
     Asset[] assetPrices
 
     for (uint i = 0; i < assetSymbols.length, i++) {
-      require(assetSymbols[i] == "ETH/USD" || assetSymbols[i] == "BTC/USD" || assetSymbols[i] == "SNX/USD" )
+      require(assetSymbols[i] == "ETH/USD" || assetSymbols[i] == "BTC/USD" || assetSymbols[i] == "SNX/USD", "asset not supported" )
 
       if (assetSymbols[i] == "ETH/USD") {
         Asset storage a;
