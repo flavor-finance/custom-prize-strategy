@@ -32,7 +32,7 @@ contract FlavorPoolBuilder {
       address(prizeStrategy.ticket()),
       address(prizeStrategy.sponsorship()),
       prizeStrategy.rng(),
-      externalErc20s,
+      externalErc20s
     );
 
     return mw;

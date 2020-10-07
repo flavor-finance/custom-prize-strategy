@@ -11,7 +11,7 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
   // mapping storing asset prices at start of prize period
   mapping(string => uint256) public startPrizePeriodPrices;
 
-  string[] assetSymbols;
+  string[] public assetSymbols;
 
   function initialize(
     address _trustedForwarder,
@@ -39,9 +39,9 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
 
   }
 
-  function addPodAddress(string assetSymbol, address podAddress) public onlyOwner {
+  function addPodAddress(string calldata assetSymbol, address podAddress) public onlyOwner {
     // only owner can add pod addresses
-    require(!podAddresses[assetSymbol]);
+    require(podAddresses[assetSymbol] != address(0));
     podAddresses[assetSymbol] = podAddress;
     assetSymbols.push(assetSymbol);
   }
@@ -54,7 +54,7 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
       }
   }
 
-  function calculateWinningAsset() internal returns (string) {
+  function calculateWinningAsset() internal returns (string memory) {
     // TODO: for each asset in assetSymbols, get latest price from oracle
     // calculate percentage change compared to startPrizePeriodPrices
     // return assetSymbol with greatest calculated value
@@ -62,7 +62,7 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
 
 /// @notice Completes the award process and awards the winners.
 // Because randomNumber isn't used, startAward function is not needed
-function completeAward(string winningAsset) external override requireCanCompleteAward {
+function completeAward(string calldata winningAsset) external override requireCanCompleteAward {
   // string winningAsset = calculateWinningAsset();
   // for initial testing, assetSymbol is passed in manually
 
@@ -75,7 +75,7 @@ function completeAward(string winningAsset) external override requireCanComplete
   emit PrizePoolOpened(_msgSender(), prizePeriodStartedAt);
 }
 
-  function _distribute(string winningAsset) internal override {
+  function _distribute(string calldata winningAsset) internal override {
     uint256 prize = prizePool.captureAwardBalance();
     console.log("Winning asset: ", winningAsset);
     address winningPodAddress = podAddresses[winningAsset];

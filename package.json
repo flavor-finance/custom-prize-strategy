@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "deploy-pt": "buidler --network pt deploy",
-    "compile": "buidler --show-stack-traces --max-memory 8192 compile"
+    "compile": "buidler --show-stack-traces compile"
   },
   "devDependencies": {
     "@nomiclabs/buidler": "^1.4.3",
