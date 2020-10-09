@@ -36,7 +36,6 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
     );
     uint256[] assetPrices = getAssetPrices();
     startPrizePeriod(assetPrices);
-
   }
 
   function addPodAddress(string assetSymbol, address podAddress) public onlyOwner {
@@ -46,13 +45,14 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
     assetSymbols.push(assetSymbol);
   }
 
-  function getAssetPrices() internal {
+  function getAssetPrices() internal returns (uint256[]) {
     uint256 assetPrices = [];
     for (uint i=0; i<assetSymbols.length; i++) {
       // TODO: get oracle price feed data
       uint256 assetPrice = 0;
       assetPrices.push(assetPrice);
     }
+    return assetPrices;
   }
 
   function startPrizePeriod(uint256[] assetPrices) internal {
