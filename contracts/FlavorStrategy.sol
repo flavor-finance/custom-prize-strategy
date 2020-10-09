@@ -34,8 +34,8 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
       _rng,
       _externalErc20s
     );
-
-    startPrizePeriod();
+    uint256[] assetPrices = getAssetPrices();
+    startPrizePeriod(assetPrices);
 
   }
 
@@ -46,32 +46,52 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
     assetSymbols.push(assetSymbol);
   }
 
-  function startPrizePeriod() internal {
-    // TODO: get oracle price feed data, or get it passed in by completeAward
+  function getAssetPrices() internal {
+    uint256 assetPrices = [];
+    for (uint i=0; i<assetSymbols.length; i++) {
+      // TODO: get oracle price feed data
+      uint256 assetPrice = 0;
+      assetPrices.push(assetPrice);
+    }
+  }
+
+  function startPrizePeriod(uint256[] assetPrices) internal {
       for (uint i=0; i<assetSymbols.length; i++) {
         uint256 assetPrice = i * 100; // placeholder value for testing
-        startPrizePeriodPrices[assetSymbols[i]] = assetPrice;
+        startPrizePeriodPrices[assetSymbols[i]] = assetPrices[i];
       }
   }
 
-  function calculateWinningAsset() internal returns (string) {
-    // TODO: for each asset in assetSymbols, get latest price from oracle
-    // calculate percentage change compared to startPrizePeriodPrices
-    // return assetSymbol with greatest calculated value
+  function calculateWinningAsset(uint256[] assetPrices) internal returns (string) {
+    uint256 largestPercentChange = -Infinity;
+    string largestPercentChangeAsset;
+    for (uint i=0; i<assetSymbols.length; i++) {
+      uint256 startPrice = startPrizePeriodPrices[assetSymbols[i]];
+      uint256 endPrice = assetPrices[i];
+      uint256 priceDiff = endPrice - startPrice;
+      uint256 percentChange = priceDiff/startPrice * 100;
+      if (percentChange > largestPercentChange){
+        largestPercentChange = percentChange;
+        largestPercentChangeAsset = assetSymbols[i];
+      }
+    }
+    return largestPercentChangeAsset;
   }
 
 /// @notice Completes the award process and awards the winners.
 // Because randomNumber isn't used, startAward function is not needed
 function completeAward(string winningAsset) external override requireCanCompleteAward {
-  // string winningAsset = calculateWinningAsset();
+  uint256[] assetPrices = getAssetPrices();
+  // string winningAsset = calculateWinningAsset(assetPrices);
   // for initial testing, assetSymbol is passed in manually
 
   _distribute(winningAsset);
 
+  emit PrizePoolAwarded(_msgSender(), winningAsset);
+
+  startPrizePeriod(assetPrices);
   // to avoid clock drift, we should calculate the start time based on the previous period start time.
   prizePeriodStartedAt = _calculateNextPrizePeriodStartTime(_currentTime());
-
-  emit PrizePoolAwarded(_msgSender(), winningAsset);
   emit PrizePoolOpened(_msgSender(), prizePeriodStartedAt);
 }
 
