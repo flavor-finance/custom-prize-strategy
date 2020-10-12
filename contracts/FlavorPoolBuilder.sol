@@ -20,11 +20,12 @@ contract FlavorPoolBuilder {
   function createFlavorStrategy(
     PeriodicPrizeStrategy prizeStrategy
   ) external returns (FlavorStrategy) {
-    FlavorStrategy mw = flavorProxyFactory.create();
+    FlavorStrategy fs = flavorProxyFactory.create();
 
     address[] memory externalErc20s;
 
-    mw.initialize(
+    /*
+    fs.initialize(
       prizeStrategy.getTrustedForwarder(),
       prizeStrategy.prizePeriodStartedAt(),
       prizeStrategy.prizePeriodSeconds(),
@@ -32,9 +33,12 @@ contract FlavorPoolBuilder {
       address(prizeStrategy.ticket()),
       address(prizeStrategy.sponsorship()),
       prizeStrategy.rng(),
-      externalErc20s,
+      externalErc20s
     );
+    */
 
-    return mw;
+    fs.transferOwnership(msg.sender);
+
+    return fs;
   }
 }

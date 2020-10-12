@@ -5,16 +5,16 @@ module.exports = async (buidler) => {
   const { deploy } = deployments
   const { deployer } = await getNamedAccounts()
 
-  debug("\n  Deploying MultipleWinnersProxyFactory...")
-  const multipleWinnersProxyFactoryResult = await deploy("MultipleWinnersProxyFactory", {
+  debug("\n  Deploying FlavorProxyFactory...")
+  const flavorProxyFactoryResult = await deploy("FlavorProxyFactory", {
     from: deployer,
     skipIfAlreadyDeployed: true
   })
 
-  debug("\n Deploying MultipleWinnerBuilder...")
-  const multipleWinnersBuilderResult = await deploy("MultipleWinnersBuilder", {
+  debug("\n Deploying FlavorPoolBuilder...")
+  const flavorBuilderResult = await deploy("FlavorPoolBuilder", {
     args: [
-      multipleWinnersProxyFactoryResult.address
+      flavorProxyFactoryResult.address
     ],
     from: deployer,
     skipIfAlreadyDeployed: true

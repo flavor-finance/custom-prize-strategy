@@ -1,5 +1,5 @@
 {
-  "name": "@pooltogether/buidler-console",
+  "name": "@flavor-finance/flavor-prize-strategy",
   "version": "0.1.0",
   "main": "index.js",
   "license": "MIT",
@@ -19,6 +19,6 @@
     "solc": "0.6.12"
   },
   "dependencies": {
-    "@pooltogether/pooltogether-contracts": "^3.0.0-alpha.39"
+    "@pooltogether/pooltogether-contracts": "^3.0.0-alpha.41"
   }
 }

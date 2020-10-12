@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.12;
 import "@pooltogether/pooltogether-contracts/contracts/prize-strategy/PeriodicPrizeStrategy.sol";
-import "@nomiclabs/buidler/console.sol";
+//import "@nomiclabs/buidler/console.sol";
 
 contract FlavorStrategy is PeriodicPrizeStrategy {
 
@@ -12,6 +12,11 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
   mapping(string => uint256) public startPrizePeriodPrices;
 
   string[] assetSymbols;
+
+  event PrizeDistributed(
+    address indexed operator,
+    string winningAsset
+  );
 
   function initialize(
     address _trustedForwarder,
@@ -34,37 +39,37 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
       _rng,
       _externalErc20s
     );
-    uint256[] assetPrices = getAssetPrices();
+    uint256[] memory assetPrices = getAssetPrices();
     startPrizePeriod(assetPrices);
   }
 
-  function addPodAddress(string assetSymbol, address podAddress) public onlyOwner {
+  function addPodAddress(string memory assetSymbol, address podAddress) public onlyOwner {
     // only owner can add pod addresses
-    require(!podAddresses[assetSymbol]);
+    require(podAddresses[assetSymbol] == address(0x0));
     podAddresses[assetSymbol] = podAddress;
     assetSymbols.push(assetSymbol);
   }
 
-  function getAssetPrices() internal returns (uint256[]) {
-    uint256 assetPrices = [];
+  function getAssetPrices() internal returns (uint256[] memory) {
+    uint256[] memory assetPrices = new uint[](assetSymbols.length);
     for (uint i=0; i<assetSymbols.length; i++) {
       // TODO: get oracle price feed data
       uint256 assetPrice = 0;
-      assetPrices.push(assetPrice);
+      assetPrices[i] = assetPrice;
     }
     return assetPrices;
   }
 
-  function startPrizePeriod(uint256[] assetPrices) internal {
+  function startPrizePeriod(uint256[] memory assetPrices) internal {
       for (uint i=0; i<assetSymbols.length; i++) {
         uint256 assetPrice = i * 100; // placeholder value for testing
         startPrizePeriodPrices[assetSymbols[i]] = assetPrices[i];
       }
   }
 
-  function calculateWinningAsset(uint256[] assetPrices) internal returns (string) {
-    uint256 largestPercentChange = -Infinity;
-    string largestPercentChangeAsset;
+  function calculateWinningAsset(uint256[] memory assetPrices) internal returns (string memory) {
+    uint256 largestPercentChange = uint256(-100);
+    string memory largestPercentChangeAsset;
     for (uint i=0; i<assetSymbols.length; i++) {
       uint256 startPrice = startPrizePeriodPrices[assetSymbols[i]];
       uint256 endPrice = assetPrices[i];
@@ -80,14 +85,14 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
 
 /// @notice Completes the award process and awards the winners.
 // Because randomNumber isn't used, startAward function is not needed
-function completeAward(string winningAsset) external override requireCanCompleteAward {
-  uint256[] assetPrices = getAssetPrices();
+function distributeAward(string memory winningAsset) external requireCanDistributeAward {
+  uint256[] memory assetPrices = getAssetPrices();
   // string winningAsset = calculateWinningAsset(assetPrices);
   // for initial testing, assetSymbol is passed in manually
 
-  _distribute(winningAsset);
+  _distributeAward(winningAsset);
 
-  emit PrizePoolAwarded(_msgSender(), winningAsset);
+  emit PrizeDistributed(_msgSender(), winningAsset);
 
   startPrizePeriod(assetPrices);
   // to avoid clock drift, we should calculate the start time based on the previous period start time.
@@ -95,11 +100,11 @@ function completeAward(string winningAsset) external override requireCanComplete
   emit PrizePoolOpened(_msgSender(), prizePeriodStartedAt);
 }
 
-  function _distribute(string winningAsset) internal override {
+  function _distributeAward(string memory winningAsset) internal {
     uint256 prize = prizePool.captureAwardBalance();
-    console.log("Winning asset: ", winningAsset);
+    //console.log("Winning asset: ", winningAsset);
     address winningPodAddress = podAddresses[winningAsset];
-    console.log("Winning pod address: ", winningPodAddress);
+    //console.log("Winning pod address: ", winningPodAddress);
 
     // winner gets all external tokens
     // TODO: is award all external tokens needed?
@@ -107,7 +112,10 @@ function completeAward(string winningAsset) external override requireCanComplete
     _awardTickets(winningPodAddress, 100);
   }
 
-  modifier requireCanCompleteAward() {
+  function _distribute(uint256 randomNumber) internal override {
+  }
+
+  modifier requireCanDistributeAward() {
     require(_isPrizePeriodOver(), "PeriodicPrizeStrategy/prize-period-not-over");
     _;
   }
