@@ -11,14 +11,14 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
   // mapping storing asset prices at start of prize period
   mapping(string => uint256) public startPrizePeriodPrices;
 
-  string[] assetSymbols;
+  string[] public assetSymbols;
 
   event PrizeDistributed(
     address indexed operator,
     string winningAsset
   );
 
-  function initialize(
+  function init(
     address _trustedForwarder,
     uint256 _prizePeriodStart,
     uint256 _prizePeriodSeconds,

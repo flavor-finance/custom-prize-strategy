@@ -24,9 +24,9 @@ contract FlavorPoolBuilder {
 
     address[] memory externalErc20s;
 
-    /*
-    fs.initialize(
-      prizeStrategy.getTrustedForwarder(),
+
+    fs.init(
+      prizeStrategy.trustedForwarder(),
       prizeStrategy.prizePeriodStartedAt(),
       prizeStrategy.prizePeriodSeconds(),
       prizeStrategy.prizePool(),
@@ -35,7 +35,7 @@ contract FlavorPoolBuilder {
       prizeStrategy.rng(),
       externalErc20s
     );
-    */
+
 
     fs.transferOwnership(msg.sender);
 
