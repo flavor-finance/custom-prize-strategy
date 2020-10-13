@@ -2,9 +2,10 @@
 
 pragma solidity ^0.6.12;
 import "@pooltogether/pooltogether-contracts/contracts/prize-strategy/PeriodicPrizeStrategy.sol";
-//import "@nomiclabs/buidler/console.sol";
+import "@nomiclabs/buidler/console.sol";
+import "./PriceChecker.sol";
 
-contract FlavorStrategy is PeriodicPrizeStrategy {
+contract FlavorStrategy is PeriodicPrizeStrategy, PriceChecker {
 
   // mapping from asset symbol to pod address
   mapping(string => address) public podAddresses;
@@ -63,10 +64,6 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
     return assetPrices;
   }
 
-  function getAssetPrice(address priceFeedAddress) internal returns (uint256) {
-    return 0; // TODO: implement price feed lookup using priceFeedAddress
-  }
-
   function startPrizePeriod(uint256[] memory assetPrices) internal {
       for (uint i=0; i<assetSymbols.length; i++) {
         uint256 assetPrice = i * 100; // placeholder value for testing
@@ -94,8 +91,7 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
 // Because randomNumber isn't used, startAward function is not needed
 function distributeAward(string memory winningAsset) external requireCanDistributeAward {
   uint256[] memory assetPrices = getAssetPrices();
-  // string winningAsset = calculateWinningAsset(assetPrices);
-  // for initial testing, assetSymbol is passed in manually
+  string memory winningAsset = calculateWinningAsset(assetPrices);
 
   _distributeAward(winningAsset);
 
@@ -109,9 +105,9 @@ function distributeAward(string memory winningAsset) external requireCanDistribu
 
   function _distributeAward(string memory winningAsset) internal {
     uint256 prize = prizePool.captureAwardBalance();
-    //console.log("Winning asset: ", winningAsset);
+    console.log("Winning asset: ", winningAsset);
     address winningPodAddress = podAddresses[winningAsset];
-    //console.log("Winning pod address: ", winningPodAddress);
+    console.log("Winning pod address: ", winningPodAddress);
 
     // winner gets all external tokens
     // TODO: is award all external tokens needed?
