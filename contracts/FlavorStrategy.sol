@@ -6,8 +6,10 @@ import "@pooltogether/pooltogether-contracts/contracts/prize-strategy/PeriodicPr
 
 contract FlavorStrategy is PeriodicPrizeStrategy {
 
-  // mapping from asset symbol to pod pod address
+  // mapping from asset symbol to pod address
   mapping(string => address) public podAddresses;
+  // mapping from asset symbol to price feed address
+  mapping(string => address) public priceFeedAddresses;
   // mapping storing asset prices at start of prize period
   mapping(string => uint256) public startPrizePeriodPrices;
 
@@ -43,21 +45,26 @@ contract FlavorStrategy is PeriodicPrizeStrategy {
     startPrizePeriod(assetPrices);
   }
 
-  function addPodAddress(string memory assetSymbol, address podAddress) public onlyOwner {
+  function addPodAddress(string memory assetSymbol, address podAddress, address priceFeedAddress) public onlyOwner {
     // only owner can add pod addresses
-    require(podAddresses[assetSymbol] == address(0x0));
+    require(podAddresses[assetSymbol] == address(0));
     podAddresses[assetSymbol] = podAddress;
+    priceFeedAddresses[assetSymbol] = priceFeedAddress;
     assetSymbols.push(assetSymbol);
   }
 
   function getAssetPrices() internal returns (uint256[] memory) {
     uint256[] memory assetPrices = new uint[](assetSymbols.length);
     for (uint i=0; i<assetSymbols.length; i++) {
-      // TODO: get oracle price feed data
-      uint256 assetPrice = 0;
+      address priceFeedAddress = priceFeedAddresses[assetSymbols[i]];
+      uint256 assetPrice = getAssetPrice(priceFeedAddress);
       assetPrices[i] = assetPrice;
     }
     return assetPrices;
+  }
+
+  function getAssetPrice(address priceFeedAddress) internal returns (uint256) {
+    return 0; // TODO: implement price feed lookup using priceFeedAddress
   }
 
   function startPrizePeriod(uint256[] memory assetPrices) internal {
