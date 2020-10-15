@@ -9,7 +9,7 @@ It facilitates the depositing and withdrawal of USDC as a `collateral asset` and
 
 Deployment happens in a few steps. First a generic prize pool is deployed. Then the prize strategy is deployed. Finally, the prize pool is updated to use the custom prize strategy.
 
-Make sure to specify which network is being used (i.e, `--network kovan`) when running `buidler console`.
+Make sure to consistently specify which network is being used (i.e, `--network kovan`) when running `buidler` commands.
 
 
 ### Deploy Prize Pool
