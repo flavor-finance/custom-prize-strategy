@@ -12,7 +12,7 @@ Deployment happens in a few steps. First a generic prize pool is deployed. Then 
 Make sure to consistently specify which network is being used (i.e, `--network kovan`) when running `buidler` commands.
 
 
-### Deploy Prize Pool
+### Deploy Prize Pool Contract
 
 Refer to the [Pool Contracts Project Documentation](https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3) for detailed instructions on deploying.
 
@@ -20,7 +20,7 @@ The easiest way to quickly deploy a prize pool is using the [Prize Pool Builder]
 
 Copy the prize pool address for reference in one of the next steps where it will be referred to as `poolAddress`.
 
-### Deploy Prize Strategy From Same Account
+### Deploy Prize Strategy Contract
 
 Deploy the prize strategy proxy factory and builder: `buidler deploy`.
 
@@ -46,7 +46,7 @@ await builder.createFlavorStrategy(prizePoolAddress)
 ```
 
 
-### Set Prize Strategy
+### Configure Prize Pool Strategy
 
 
 Deploy the prize strategy proxy factory and builder: `buidler deploy`.
@@ -60,7 +60,7 @@ pool.setPrizeStrategy(strategyAddress)
 ```
 
 
-### Deploy Pods and Set Pod Addresses
+### Deploy Pods and Configure Pod Addresses
 
 First, clone our fork of the [Pod Contracts repository](https://github.com/flavor-finance/pooltogether-pod-contracts) and edit the `scripts/podMigrate.js` script, setting the `prizePoolAddress` variable as the prize pool address from the first step.
 
