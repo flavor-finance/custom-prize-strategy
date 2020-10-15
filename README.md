@@ -18,7 +18,7 @@ Refer to the [Pool Contracts Project Documentation](https://github.com/pooltoget
 
 The easiest way to quickly deploy a prize pool is using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to have the correct network selected. The Single Random Winner strategy will be used, and will be modified later.
 
-Copy the prize pool address for reference in one of the next steps.
+Copy the prize pool address for reference in one of the next steps where it will be referred to as `poolAddress`.
 
 ### Deploy Prize Strategy From Same Account
 
@@ -39,7 +39,7 @@ Now get the address that will be used for the deployed prize strategy contract u
 await builder.callStatic.createFlavorStrategy(prizePoolAddress)
 ```
 
-After saving the strategy address, create the strategy:
+After saving the strategy address (it will be referred to as `strategyAddress`), create the strategy:
 
 ```
 await builder.createFlavorStrategy(prizePoolAddress)
