@@ -11,8 +11,8 @@ module.exports = async (buidler) => {
     skipIfAlreadyDeployed: true
   })
 
-  debug("\n Deploying FlavorPoolBuilder...")
-  const flavorBuilderResult = await deploy("FlavorPoolBuilder", {
+  debug("\n Deploying FlavorBuilder...")
+  const flavorBuilderResult = await deploy("FlavorBuilder", {
     args: [
       flavorProxyFactoryResult.address
     ],

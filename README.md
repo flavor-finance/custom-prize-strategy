@@ -1,6 +1,97 @@
-# PoolTogether Custom Prize Strategy
+# Flavor Prize Strategy
 
-Example project demonstrating a custom prize strategy.  Fork this project to easily create and test your own prize stratgies.
+Flavor uses a prize strategy developed on top of the (PoolTogether V3)[https://www.pooltogether.com/] protocol.
+
+It facilitates the depositing and withdrawal of USDC as a `collateral asset` and uses Chainlink for retrieving an arbitrary number of `prediction asset` price feeds. A pod contract address must be deployed and configured for each `prediction asset`.
+
+
+## Deployment
+
+Deployment happens in a few steps. First a generic prize pool is deployed. Then the prize strategy is deployed. Finally, the prize pool is updated to use the custom prize strategy.
+
+Make sure to specify which network is being used (i.e, `--network kovan`) when running `buidler console`.
+
+
+### Deploy Prize Pool
+
+Refer to the (Pool Contracts Project Documentation)[https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3] for detailed instructions on deploying.
+
+The easiest way to quickly deploy a prize pool is using the (Prize Pool Builder)[https://builder.pooltogether.com/]. Make sure to have the correct network selected. The Single Random Winner strategy will be used, and will be modified later.
+
+Copy the prize pool address for reference in one of the next steps.
+
+### Deploy Prize Strategy From Same Account
+
+Deploy the prize strategy proxy factory and builder: `buidler deploy`.
+
+Run `buidler console` and use the prize pool address from the previous step to create the strategy contract:
+
+```
+prizePoolAddress = 0x...
+deployed = await deployments.all()
+signers = await ethers.getSigners()
+builder = await ethers.getContractAt(deployed.FlavorBuilder.abi, deployed.FlavorBuilder.address, signers[0])
+```
+
+Now get the address that will be used for the deployed prize strategy contract using the generated prize pool address:
+
+```
+await builder.callStatic.createFlavorStrategy(prizePoolAddress)
+```
+
+After saving the strategy address, create the strategy:
+
+```
+await builder.createFlavorStrategy(prizePoolAddress)
+```
+
+
+### Set Prize Strategy
+
+
+Deploy the prize strategy proxy factory and builder: `buidler deploy`.
+
+Run `buidler console`, then call the `setPrizeStrategy` method on the pool contract, passing the strategy contract address:
+
+```
+signers = await ethers.getSigners()
+pool = await ethers.getContractAt('PrizePool',poolAddress, signers[0])
+pool.setPrizeStrategy(strategyAddress)
+```
+
+
+### Deploy Pods and Set Pod Addresses
+
+First, clone our fork of the (Pod Contracts repository)[https://github.com/flavor-finance/pooltogether-pod-contracts] and edit the `scripts/podMigrate.js` script, setting the `prizePoolAddress` variable as the prize pool address from the first step.
+
+Run `yarn` to install dependencies.
+
+Get the prize strategy loaded up via `buidler console` from this repository:
+
+```
+prizePoolAddress = 0x...
+deployed = await deployments.all()
+signers = await ethers.getSigners()
+prizeStrategy = await ethers.getContractAt(deployed.FlavorStrategy.abi, strategyAddress, signers[0])
+```
+
+To deploy a pod contract, complete the following steps:
+
+1. Run `yarn pod-migrate` to deploy a new pod contract instance.
+
+2. Once the pod contract is deployed, get the deployed pod contract address by opening `build/contracts/Pod.json` and finding the `address` property under the correct network in the `networks` object.
+
+3. Call `prizeStrategy.addPodAddress` with the asset symbol to use for the pod, the contract address of the pod, and the (Chainlink price feed address)[https://docs.chain.link/docs/reference-contracts] for the asset's USD price feed.
+
+
+Repeat these three steps for each prediction asset that should be supported. Using the `pod-migrate` script will automatically run `truffle networks --clean`, resetting the truffle configuration and deploying a new contract instance.
+
+### Completing Prize Periods
+
+The (flavor-finance)[https://github.com/flavor-finance/flavor-finance] repository contains a web server setup to facilitate a daily cron job that calls the `distributeAward` method, which calculates the winning pod and distributes the daily award to it, and creates the next prize period. In the event this web server is offline, this is a public method can can be successfully called by anyone so long as the prize period has ended.
+
+
+---
 
 ## Setup
 

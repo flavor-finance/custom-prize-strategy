@@ -6,14 +6,14 @@ pragma experimental ABIEncoderV2;
 import "./FlavorProxyFactory.sol";
 
 /* solium-disable security/no-block-members */
-contract FlavorPoolBuilder {
+contract FlavorBuilder {
 
   FlavorProxyFactory public flavorProxyFactory;
 
   constructor (
     FlavorProxyFactory _flavorProxyFactory
   ) public {
-    require(address(_flavorProxyFactory) != address(0), "FlavorPoolBuilder/flavorProxyFactory-not-zero");
+    require(address(_flavorProxyFactory) != address(0), "FlavorBuilder/flavorProxyFactory-not-zero");
     flavorProxyFactory = _flavorProxyFactory;
   }
 
