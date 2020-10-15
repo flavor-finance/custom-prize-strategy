@@ -18,7 +18,7 @@ Refer to the [Pool Contracts Project Documentation](https://github.com/pooltoget
 
 The easiest way to quickly deploy a prize pool is using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to have the correct network selected. The Single Random Winner strategy will be used, and will be modified later.
 
-Copy the prize pool address for reference in one of the next steps where it will be referred to as `poolAddress`.
+Copy the prize pool address for reference in one of the next steps where it will be referred to as `prizePoolAddress`.
 
 ### Deploy Prize Strategy Contract
 
@@ -27,7 +27,6 @@ Deploy the prize strategy proxy factory and builder: `buidler deploy`.
 Run `buidler console` and use the prize pool address from the previous step to create the strategy contract:
 
 ```
-prizePoolAddress = 0x...
 deployed = await deployments.all()
 signers = await ethers.getSigners()
 builder = await ethers.getContractAt(deployed.FlavorBuilder.abi, deployed.FlavorBuilder.address, signers[0])
@@ -55,7 +54,7 @@ Run `buidler console`, then call the `setPrizeStrategy` method on the pool contr
 
 ```
 signers = await ethers.getSigners()
-pool = await ethers.getContractAt('PrizePool',poolAddress, signers[0])
+pool = await ethers.getContractAt('PrizePool', prizePoolAddress, signers[0])
 pool.setPrizeStrategy(strategyAddress)
 ```
 
@@ -69,7 +68,6 @@ Run `yarn` to install dependencies.
 Get the prize strategy loaded up via `buidler console` from this repository:
 
 ```
-prizePoolAddress = 0x...
 deployed = await deployments.all()
 signers = await ethers.getSigners()
 prizeStrategy = await ethers.getContractAt(deployed.FlavorStrategy.abi, strategyAddress, signers[0])
