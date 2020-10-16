@@ -50,7 +50,7 @@ await builder.createFlavorStrategy(prizePoolAddress)
 
 Deploy the prize strategy proxy factory and builder: `buidler deploy`.
 
-Run `buidler console`, then call the `setPrizeStrategy` method on the pool contract, passing the strategy contract address:
+Run `buidler console`, then call the `setPrizeStrategy` method on the pool contract, using the strategy contract address as an argument:
 
 ```
 signers = await ethers.getSigners()
@@ -61,7 +61,7 @@ pool.setPrizeStrategy(strategyAddress)
 
 ### Deploy Pods and Configure Pod Addresses
 
-First, clone our fork of the [Pod Contracts repository](https://github.com/flavor-finance/pooltogether-pod-contracts) and edit the `scripts/podMigrate.js` script, setting the `prizePoolAddress` variable as the prize pool address from the first step.
+First, clone our fork of the [Pod Contracts repository](https://github.com/flavor-finance/pooltogether-pod-contracts) and edit the `scripts/migrate.js` script, setting the `POOL_USDC` address for the network you are using as the prize pool address from the first step.
 
 Run `yarn` to install dependencies.
 
@@ -75,14 +75,14 @@ prizeStrategy = await ethers.getContractAt(deployed.FlavorStrategy.abi, strategy
 
 To deploy a pod contract, complete the following steps:
 
-1. Run `yarn pod-migrate` to deploy a new pod contract instance.
+1. Run `yarn migrate` to deploy a new pod contract instance.
 
 2. Once the pod contract is deployed, get the deployed pod contract address by opening `build/contracts/Pod.json` and finding the `address` property under the correct network in the `networks` object.
 
 3. Call `prizeStrategy.addPodAddress` with the asset symbol to use for the pod, the contract address of the pod, and the [Chainlink price feed address](https://docs.chain.link/docs/reference-contracts) for the asset's USD price feed.
 
 
-Repeat these three steps for each prediction asset that should be supported. Using the `pod-migrate` script will automatically run `truffle networks --clean`, resetting the truffle configuration and deploying a new contract instance.
+Repeat these three steps for each prediction asset that should be supported. 
 
 ### Completing Prize Periods
 
