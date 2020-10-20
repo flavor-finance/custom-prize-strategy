@@ -15,6 +15,8 @@ async function main() {
 
   console.log("Account balance:", ethers.utils.formatEther(await deployer.getBalance()));
 
+  console.log('flavorBuilderAddress', flavorBuilderAddress);
+  console.log('flavorProxyFactoryAddress', flavorProxyFactoryAddress);
   debug(`\n  Connecting to FlavorProxyFactory (${flavorProxyFactoryAddress})...`);
   const flavorProxy = await new ethers.Contract(flavorProxyFactoryAddress, abiFlavorProxyFactory, deployer);
 
@@ -34,13 +36,13 @@ async function main() {
     ethers.utils.formatEther(await ethers.provider.getBalance(flavorProxy.address))
   );
 
-  console.log("Sending 0.1 ETH to flavorBuilder address:", flavorBuilder.address);
-  const tx = await deployer.sendTransaction({
-    to: flavorBuilder.address,
-    value: ethers.utils.parseEther("0.1"),
-  });
-
-  //await (await tacoToken.transfer(crowdsaleContract.address, CIRCULATING_SUPPLY)).wait(1);
+  // console.log("Sending 0.1 ETH to flavorBuilder address:", flavorBuilder.address);
+  // const tx = await deployer.sendTransaction({
+  //   to: flavorBuilder.address,
+  //   value: ethers.utils.parseEther("0.1"),
+  // });
+  //
+  // //await (await tacoToken.transfer(crowdsaleContract.address, CIRCULATING_SUPPLY)).wait(1);
   console.log("send tx:", tx);
 
   console.log("Starting flavorBuilder.createFlavorStrategy");
