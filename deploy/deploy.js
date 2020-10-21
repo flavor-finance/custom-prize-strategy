@@ -8,7 +8,7 @@ async function main() {
   ///Prize Pool address creaated in the Builder: https://builder.pooltogether.com/
   const prizePoolAddress = "0x5259fcC7e86E8e5997AcdDA4E09Fd326500c44A1";
 
-  console.log("Deploying contracts with the account:", await deployer.getAddress());
+  console.log("Deploying contracts with the account:", await ethers.utils.formatEther(deployer.getAddress()));
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 

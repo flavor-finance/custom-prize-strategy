@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@chainlink/contracts": "^0.0.10",
-    "@pooltogether/pooltogether-contracts": "^3.0.0-alpha.41"
+    "@pooltogether/pooltogether-contracts": "^3.0.0-alpha.41",
+    "@truffle/hdwallet-provider": "^1.1.1"
   }
 }
