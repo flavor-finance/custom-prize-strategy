@@ -10,5 +10,11 @@ const prizePoolInst = await PrizePool.at(prizePool); //Create link to Prize Pool
 const strategyContract = await flavorBuilderInst.createFlavorStrategy(PrizeStrategyContract);
 
 //Recieving a strategyAddress from Tx logs in Etherscan (InterfaceImplementerSet)
-const strategyAddress = "0x1b722013c594a526d62e8115876b96934e2e95b6";
+const strategyAddress = "0xe8e55e4f2037e79c726ff374bbdaa94eb7cff24c";
 await prizePoolInst.setPrizeStrategy(strategyAddress);
+
+//Creating link to FlavorStrategy contract
+const flavorStragyAddress = await flavorProxyFactoryInst.instance();
+const flavorStrategylInst = await FlavorStrategy.at(flavorStragyAddress);
+await flavorStrategylInst.completeAward("sf");
+//0xe8e55e4f2037e79c726ff374bbdaa94eb7cff24c

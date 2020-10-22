@@ -89,7 +89,7 @@ contract FlavorStrategy is PeriodicPrizeStrategy, PriceChecker {
 
 /// @notice Completes the award process and awards the winners.
 // Because randomNumber isn't used, startAward function is not needed
-function completeAward(string memory winningAsset) external requireCanDistributeAward {
+function completeAward(string memory forSafeOverride) external requireCanDistributeAward {
   uint256[] memory assetPrices = getAssetPrices();
   string memory winningAsset = calculateWinningAsset(assetPrices);
 
