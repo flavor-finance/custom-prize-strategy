@@ -11,7 +11,7 @@ Deployment happens in a few steps. First a generic prize pool is deployed. Then 
 Install dependencies `yarn`
 Install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) if needed.
 
-Add variable in `.env` file (use `.env.example` as a reference). For `HDWALLET_MNEMONIC` use mnemonic phrases from your MetaMask Test account or use any other Ethereum wallet.
+Add variable in `.env` file (use `.env.example` as a reference). For `HDWALLET_MNEMONIC` use mnemonic phrases from your MetaMask Test account or any other Ethereum wallet.
 Sign up [Infura](https://infura.io/) for recieving `INFURA_API_KEY`.
 
 ### Deploy Prize Pool Contract
@@ -24,7 +24,11 @@ Save Prize Pool contract address as `prizePoolAddress` and Prize Strategy contra
 ### Deploy Prize Strategy Contract
 
 Deploy the FlavorProxyFactory and FlavorBuilder contracts with command:
-`truffle migrate --network rinkeby`
+
+```
+truffle migrate --network rinkeby
+```
+
 Make sure to consistently specify which network is being used (i.e, `--network rinkeby`) when running `truffle` commands.
 
 Run `truffle console --network rinkeby` and use `prizeStrategyContract` address from the previous step to create the strategy contract.
