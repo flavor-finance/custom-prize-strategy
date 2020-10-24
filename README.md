@@ -4,60 +4,44 @@ Flavor uses a prize strategy developed on top of the [PoolTogether V3](https://w
 
 It facilitates the depositing and withdrawal of USDC as a `collateral asset` and uses Chainlink for retrieving an arbitrary number of `prediction asset` price feeds. A pod contract address must be deployed and configured for each `prediction asset`.
 
-
 ## Deployment
 
 Deployment happens in a few steps. First a generic prize pool is deployed. Then the prize strategy is deployed. Finally, the prize pool is updated to use the custom prize strategy.
 
-Make sure to consistently specify which network is being used (i.e, `--network kovan`) when running `buidler` commands.
+First install dependencies `yarn`. Install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) if needed.
 
+Add variable in .env file (use .env.example as a reference). For HDWALLET_MNEMONIC use mnemonic phrases from your MetaMask Test account or use any other Ethereum wallet.
+Sign up [Infura] (https://infura.io/) for recieving INFURA_API_KEY.
 
 ### Deploy Prize Pool Contract
 
-Refer to the [Pool Contracts Project Documentation](https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3) for detailed instructions on deploying.
+Deploy prize pool contracts using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to select same network as will be using for further FlavorContracts depoyment. The Single Random Winner strategy will be used, and will be modified later. [Pool Contracts Project Documentation](https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3)
 
-The easiest way to quickly deploy a prize pool is using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to have the correct network selected. The Single Random Winner strategy will be used, and will be modified later.
-
-Copy the prize pool address for reference in one of the next steps where it will be referred to as `prizePoolAddress`.
+Save Prize Pool contract address as `prizePoolAddress` and Prize Strategy contract address `prizeStrategyContract` for references in the next steps.
 
 ### Deploy Prize Strategy Contract
 
-Deploy the prize strategy proxy factory and builder: `buidler deploy`.
+Deploy the FlavorProxyFactory.sol and FlavorBuilder.sol with command: `truffle migrate --network rinkeby`.
+Make sure to consistently specify which network is being used (i.e, `--network rinkeby`) when running `truffle` commands.
 
-Run `buidler console` and use the prize pool address from the previous step to create the strategy contract:
-
-```
-deployed = await deployments.all()
-signers = await ethers.getSigners()
-builder = await ethers.getContractAt(deployed.FlavorBuilder.abi, deployed.FlavorBuilder.address, signers[0])
-```
-
-Now get the address that will be used for the deployed prize strategy contract using the generated prize pool address:
+Run `truffle console --network rinkeby` and use the prize pool address from the previous step to create the strategy contract:
 
 ```
-await builder.callStatic.createFlavorStrategy(prizePoolAddress)
+const flavorBuilderInst = await FlavorBuilder.deployed(); //Create link to the FlavorBuilder
+//Configure prize strategy contract
+const strategyContract = await flavorBuilderInst.createFlavorStrategy(prizeStrategyContract);
 ```
 
-After saving the strategy address (it will be referred to as `strategyAddress`), create the strategy:
-
-```
-await builder.createFlavorStrategy(prizePoolAddress)
-```
-
+After running the next command save returned address as `strategyAddress`, it will be used for the deployed prize strategy contract using the generated prize pool address.
 
 ### Configure Prize Pool Strategy
 
-
-Deploy the prize strategy proxy factory and builder: `buidler deploy`.
-
-Run `buidler console`, then call the `setPrizeStrategy` method on the pool contract, using the strategy contract address as an argument:
+Create Prize Pool using prizePoolAddress saved bellow
 
 ```
-signers = await ethers.getSigners()
-pool = await ethers.getContractAt('PrizePool', prizePoolAddress, signers[0])
+const prizePoolInst = await PrizePool.at(prizePoolAddress); //Link to Prize Pool
 pool.setPrizeStrategy(strategyAddress)
 ```
-
 
 ### Deploy Pods and Configure Pod Addresses
 
@@ -81,13 +65,11 @@ To deploy a pod contract, complete the following steps:
 
 3. Call `prizeStrategy.addPodAddress` with the asset symbol to use for the pod, the contract address of the pod, and the [Chainlink price feed address](https://docs.chain.link/docs/reference-contracts) for the asset's USD price feed.
 
-
 Repeat these three steps for each prediction asset that should be supported.
 
 ### Completing Prize Periods
 
 The [flavor-finance](https://github.com/flavor-finance/flavor-finance) repository contains a web server setup to facilitate a daily cron job that calls the `completeAward` method, which calculates the winning pod and distributes the daily award to it, and creates the next prize period. In the event this web server is offline, this is a public method can can be successfully called by anyone so long as the prize period has ended.
-
 
 ---
 
@@ -105,7 +87,7 @@ Copy over .envrc.example to .envrc
 $ cp .envrc.example .envrc
 ```
 
-Make sure to update the enviroment variables with suitable values.  You'll want to administer any pools you create, so be sure to use a mnemonic that you used to create a prize pool.
+Make sure to update the enviroment variables with suitable values. You'll want to administer any pools you create, so be sure to use a mnemonic that you used to create a prize pool.
 
 Now enable the env vars using [direnv](https://direnv.net/docs/installation.html)
 
