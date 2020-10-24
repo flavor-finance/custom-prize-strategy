@@ -24,12 +24,12 @@ Save Prize Pool contract address as `prizePoolAddress` and Prize Strategy contra
 Deploy the FlavorProxyFactory.sol and FlavorBuilder.sol with command: `truffle migrate --network rinkeby`.
 Make sure to consistently specify which network is being used (i.e, `--network rinkeby`) when running `truffle` commands.
 
-Run `truffle console --network rinkeby` and use the prize pool address from the previous step to create the strategy contract:
+Run `truffle console --network rinkeby` and use Prize Strategy contract address from the previous step to create the strategy contract.
 
 ```
 const flavorBuilderInst = await FlavorBuilder.deployed(); //Create link to the FlavorBuilder
-//Configure prize strategy contract
 const strategyContract = await flavorBuilderInst.createFlavorStrategy(prizeStrategyContract);
+//Configure prize strategy contract
 ```
 
 After running the next command save returned address as `strategyAddress`, it will be used for the deployed prize strategy contract using the generated prize pool address.
@@ -39,8 +39,8 @@ After running the next command save returned address as `strategyAddress`, it wi
 Create Prize Pool using prizePoolAddress saved bellow
 
 ```
-const prizePoolInst = await PrizePool.at(prizePoolAddress); //Link to Prize Pool
-pool.setPrizeStrategy(strategyAddress)
+const prizePoolInst = await PrizePool.at(prizePoolAddress); 
+pool.setPrizeStrategy(strategyAddress);
 ```
 
 ### Deploy Pods and Configure Pod Addresses
