@@ -8,23 +8,26 @@ It facilitates the depositing and withdrawal of USDC as a `collateral asset` and
 
 Deployment happens in a few steps. First a generic prize pool is deployed. Then the prize strategy is deployed. Finally, the prize pool is updated to use the custom prize strategy.
 
-First install dependencies `yarn`. Install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) if needed.
+Install dependencies `yarn`
+Install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) if needed.
 
-Add variable in .env file (use .env.example as a reference). For HDWALLET_MNEMONIC use mnemonic phrases from your MetaMask Test account or use any other Ethereum wallet.
-Sign up [Infura] (https://infura.io/) for recieving INFURA_API_KEY.
+Add variable in `.env` file (use `.env.example` as a reference). For `HDWALLET_MNEMONIC` use mnemonic phrases from your MetaMask Test account or use any other Ethereum wallet.
+Sign up [Infura](https://infura.io/) for recieving `INFURA_API_KEY`.
 
 ### Deploy Prize Pool Contract
 
-Deploy prize pool contracts using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to select same network as will be using for further FlavorContracts depoyment. The Single Random Winner strategy will be used, and will be modified later. [Pool Contracts Project Documentation](https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3)
+Deploy prize pool contracts using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to select same the network as will be using in further FlavorContracts depoyment. The Single Random Winner strategy will be used, and will be modified later.
+[Pool Contracts Project Documentation](https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3)
 
 Save Prize Pool contract address as `prizePoolAddress` and Prize Strategy contract address `prizeStrategyContract` for references in the next steps.
 
 ### Deploy Prize Strategy Contract
 
-Deploy the FlavorProxyFactory.sol and FlavorBuilder.sol with command: `truffle migrate --network rinkeby`.
+Deploy the FlavorProxyFactory and FlavorBuilder contracts with command:
+`truffle migrate --network rinkeby`
 Make sure to consistently specify which network is being used (i.e, `--network rinkeby`) when running `truffle` commands.
 
-Run `truffle console --network rinkeby` and use Prize Strategy contract address from the previous step to create the strategy contract.
+Run `truffle console --network rinkeby` and use `prizeStrategyContract` address from the previous step to create the strategy contract.
 
 ```
 const flavorBuilderInst = await FlavorBuilder.deployed(); //Create link to the FlavorBuilder
@@ -32,18 +35,20 @@ const strategyContract = await flavorBuilderInst.createFlavorStrategy(prizeStrat
 //Configure prize strategy contract
 ```
 
-After running the next command save returned address as `strategyAddress`, it will be used for the deployed prize strategy contract using the generated prize pool address.
+After running `createFlavorStrategy` save returned address as `strategyAddress`, it will be used for the deployed prize strategy contract using the generated prize pool address.
 
 ### Configure Prize Pool Strategy
 
 Create Prize Pool using prizePoolAddress saved bellow
 
 ```
-const prizePoolInst = await PrizePool.at(prizePoolAddress); 
+const prizePoolInst = await PrizePool.at(prizePoolAddress);
 pool.setPrizeStrategy(strategyAddress);
 ```
 
 ### Deploy Pods and Configure Pod Addresses
+
+//To-Do next section
 
 First, clone our fork of the [Pod Contracts repository](https://github.com/flavor-finance/pooltogether-pod-contracts) and edit the `scripts/migrate.js` script, setting the `POOL_USDC` address for the network you are using as the prize pool address from the first step.
 
