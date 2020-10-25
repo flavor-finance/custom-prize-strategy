@@ -12,11 +12,11 @@ Install dependencies `yarn`
 Install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) if needed.
 
 Add variable in `.env` file (use `.env.example` as a reference). For `HDWALLET_MNEMONIC` use mnemonic phrases from your MetaMask Test account or any other Ethereum wallet.
-Sign up [Infura](https://infura.io/) for recieving `INFURA_API_KEY`.
+Sign up [Infura](https://infura.io/) for receiving `INFURA_API_KEY`.
 
 ### Deploy Prize Pool Contract
 
-Deploy prize pool contracts using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to select same the network as will be using in further FlavorContracts depoyment. The Single Random Winner strategy will be used, and will be modified later.
+Deploy prize pool contracts using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to select same the network as will be using in further FlavorContracts deployment. The Single Random Winner strategy will be used, and will be modified later.
 [Pool Contracts Project Documentation](https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3)
 
 Save Prize Pool contract address as `prizePoolAddress` and Prize Strategy contract address `prizeStrategyContract` for references in the next steps.
@@ -36,18 +36,19 @@ Run `truffle console --network rinkeby` and use `prizeStrategyContract` address 
 ```
 const flavorBuilderInst = await FlavorBuilder.deployed(); //Create link to the FlavorBuilder
 const strategyContract = await flavorBuilderInst.createFlavorStrategy(prizeStrategyContract);
-//Configure prize strategy contract
 ```
 
-After running `createFlavorStrategy` save returned address as `strategyAddress`, it will be used for the deployed prize strategy contract using the generated prize pool address.
+There are now two contracts: a "proxy" contract that forwards transactions to an "implementation" contract, and the "implementation" contract that will be swapped for another contract when an upgrade takes place.
+
+The proxy contract address is `strategyContract.receipt.rawLogs[0].address`. The implementation contract address is `'0x' + strategyContract.receipt.rawLogs[0].data.slice(26)`. Use the proxy contract. Set the proxy contract address as `strategyAddress`, to allow the implementation to be easily updated later.
 
 ### Configure Prize Pool Strategy
 
-Create Prize Pool using prizePoolAddress saved bellow
+Create Prize Pool using the `prizePoolAddress` and call `setPrizeStrategy` with the `strategyAddress` contract address value.
 
 ```
 const prizePoolInst = await PrizePool.at(prizePoolAddress);
-pool.setPrizeStrategy(strategyAddress);
+prizePoolInst.setPrizeStrategy(strategyAddress);
 ```
 
 ### Deploy Pods and Configure Pod Addresses
