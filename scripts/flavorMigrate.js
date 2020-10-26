@@ -16,4 +16,8 @@ const flavorProxyFactoryInst = await FlavorProxyFactory.deployed(); //Create lin
 const flavorStragyAddress = await flavorProxyFactoryInst.instance();
 const flavorStrategylInst = await FlavorStrategy.at(flavorStragyAddress);
 await flavorStrategylInst.completeAward("sf");
-//0xe8e55e4f2037e79c726ff374bbdaa94eb7cff24c
+
+//Depoying Pod contract
+const podInst = await Pod.deployed(); //Create link to Pod contract
+const tokenAddress = ""; // Specify address for the Pod's token
+podInst.initialize(tokenAddress); //Initilize Pod for specific token

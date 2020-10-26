@@ -40,7 +40,7 @@ const strategyContract = await flavorBuilderInst.createFlavorStrategy(prizeStrat
 
 There are now two contracts: a "proxy" contract that forwards transactions to an "implementation" contract, and the "implementation" contract that will be swapped for another contract when an upgrade takes place.
 
-The proxy contract address is `strategyContract.receipt.rawLogs[0].address`. 
+The proxy contract address is `strategyContract.receipt.rawLogs[0].address`.
 
 The implementation contract address is `'0x' + strategyContract.receipt.rawLogs[0].data.slice(26)`. Use the proxy contract. Set the proxy contract address as `strategyAddress`, to allow the implementation to be easily updated later.
 
@@ -55,29 +55,32 @@ prizePoolInst.setPrizeStrategy(strategyAddress);
 
 ### Deploy Pods and Configure Pod Addresses
 
-//To-Do next section
+First, clone our fork of the [Pod Contracts repository](https://github.com/flavor-finance/pooltogether-pod-contracts).
 
-First, clone our fork of the [Pod Contracts repository](https://github.com/flavor-finance/pooltogether-pod-contracts) and edit the `scripts/migrate.js` script, setting the `POOL_USDC` address for the network you are using as the prize pool address from the first step.
+Add variables in `.env` file (use `.env.example` as a reference). For `HDWALLET_MNEMONIC` use mnemonic phrases from your MetaMask Test account or any other Ethereum wallet.
+Sign up [Infura](https://infura.io/) for receiving `INFURA_API_KEY`.
 
 Run `yarn` to install dependencies.
 
-Get the prize strategy loaded up via `buidler console` from this repository:
+To deploy a pod contract, complete the following steps. Don't forget to specify desired network.
+
+1. Edit `migrations/2_initial_migration` and save the address of prdection asset in `tokenAddress` variable.
+
+2. Run `truffle migrate --network rinkeby --reset` to deploy a new pod contract instance for that asset.
+
+3. Once the pod contract is deployed, get the deployed pod contract address by opening `build/contracts/Pod.json` and finding the `address` property under the correct network in the `networks` object. Save it as `podAddress`
+
+4. Return to Flavor Strategy repository and run console. Derive link to FlavoerStrategy contract:
 
 ```
-deployed = await deployments.all()
-signers = await ethers.getSigners()
-prizeStrategy = await ethers.getContractAt(deployed.FlavorStrategy.abi, strategyAddress, signers[0])
+const flavorProxyFactoryInst = await FlavorProxyFactory.deployed(); //Create link to Flavor Proxy Factory
+const flavorStragyAddress = await flavorProxyFactoryInst.instance();
+const flavorStrategylInst = await FlavorStrategy.at(flavorStragyAddress);
 ```
 
-To deploy a pod contract, complete the following steps:
+5. Call `flavorStrategylInst.addPodAddress(string memory assetSymbol, address podAddress, address priceFeedAddress)` with arguments the asset symbol to use for the pod, the contract address of the pod `podAddress`, and the [Chainlink price feed address](https://docs.chain.link/docs/reference-contracts) for the asset's USD price feed.
 
-1. Run `yarn migrate` to deploy a new pod contract instance.
-
-2. Once the pod contract is deployed, get the deployed pod contract address by opening `build/contracts/Pod.json` and finding the `address` property under the correct network in the `networks` object.
-
-3. Call `prizeStrategy.addPodAddress` with the asset symbol to use for the pod, the contract address of the pod, and the [Chainlink price feed address](https://docs.chain.link/docs/reference-contracts) for the asset's USD price feed.
-
-Repeat these three steps for each prediction asset that should be supported.
+Repeat these steps for each prediction asset that should be supported.
 
 ### Completing Prize Periods
 
