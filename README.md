@@ -70,7 +70,7 @@ To deploy a pod contract, complete the following steps. Don't forget to specify 
 
 3. Once the pod contract is deployed, get the deployed pod contract address by opening `build/contracts/Pod.json` and finding the `address` property under the correct network in the `networks` object. Save it as `podAddress`
 
-4. Return to Flavor Strategy repository and run console. Derive link to FlavoerStrategy contract:
+4. Return to Flavor Strategy repository and run console. Derive link to FlavorStrategy contract:
 
 ```
 const flavorProxyFactoryInst = await FlavorProxyFactory.deployed(); //Create link to Flavor Proxy Factory
