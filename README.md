@@ -11,7 +11,7 @@ Deployment happens in a few steps. First a generic prize pool is deployed. Then 
 Install dependencies `yarn`
 Install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) if needed.
 
-Add variable in `.env` file (use `.env.example` as a reference). For `HDWALLET_MNEMONIC` use mnemonic phrases from your MetaMask Test account or any other Ethereum wallet.
+Add variables in `.env` file (use `.env.example` as a reference). For `HDWALLET_MNEMONIC` use mnemonic phrases from your MetaMask Test account or any other Ethereum wallet.
 Sign up [Infura](https://infura.io/) for receiving `INFURA_API_KEY`.
 
 ### Deploy Prize Pool Contract
@@ -40,7 +40,9 @@ const strategyContract = await flavorBuilderInst.createFlavorStrategy(prizeStrat
 
 There are now two contracts: a "proxy" contract that forwards transactions to an "implementation" contract, and the "implementation" contract that will be swapped for another contract when an upgrade takes place.
 
-The proxy contract address is `strategyContract.receipt.rawLogs[0].address`. The implementation contract address is `'0x' + strategyContract.receipt.rawLogs[0].data.slice(26)`. Use the proxy contract. Set the proxy contract address as `strategyAddress`, to allow the implementation to be easily updated later.
+The proxy contract address is `strategyContract.receipt.rawLogs[0].address`. 
+
+The implementation contract address is `'0x' + strategyContract.receipt.rawLogs[0].data.slice(26)`. Use the proxy contract. Set the proxy contract address as `strategyAddress`, to allow the implementation to be easily updated later.
 
 ### Configure Prize Pool Strategy
 
