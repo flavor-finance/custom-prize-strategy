@@ -9,6 +9,7 @@ It facilitates the depositing and withdrawal of USDC as a `collateral asset` and
 Deployment happens in a few steps. First a generic prize pool is deployed. Then the prize strategy is deployed. Finally, the prize pool is updated to use the custom prize strategy.
 
 Install dependencies `yarn`
+
 Install [Truffle](https://www.trufflesuite.com/docs/truffle/getting-started/installation) if needed.
 
 Add variables in `.env` file (use `.env.example` as a reference). For `HDWALLET_MNEMONIC` use mnemonic phrases from your MetaMask Test account or any other Ethereum wallet.
@@ -64,13 +65,15 @@ Run `yarn` to install dependencies.
 
 To deploy a pod contract, complete the following steps. Don't forget to specify desired network.
 
-1. Edit `migrations/2_initial_migration` and save the address of prdection asset in `tokenAddress` variable.
+1. Edit `migrations/2_initial_migration` and save the Pool address created via [Builder](https://builder.pooltogether.com/) in the `tokenAddress` variable.
 
-2. Run `truffle migrate --network rinkeby --reset` to deploy a new pod contract instance for that asset.
+2. Depending on the desired number of copies, edit function `deployCopy`
 
-3. Once the pod contract is deployed, get the deployed pod contract address by opening `build/contracts/Pod.json` and finding the `address` property under the correct network in the `networks` object. Save it as `podAddress`
+3. Run `truffle migrate --network rinkeby` to deploy a new pod contracts.
 
-4. Return to Flavor Strategy repository and run console. Derive link to FlavorStrategy contract:
+4. Once the pod contract is deployed, get the deployed pod contract addresses in `migrations/deployedAddress`. Save it as `podAddress`
+
+5. Return to Flavor Strategy repository and run console. Derive link to FlavorStrategy contract:
 
 ```
 const flavorProxyFactoryInst = await FlavorProxyFactory.deployed(); //Create link to Flavor Proxy Factory
@@ -78,9 +81,13 @@ const flavorStragyAddress = await flavorProxyFactoryInst.instance();
 const flavorStrategylInst = await FlavorStrategy.at(flavorStragyAddress);
 ```
 
-5. Call `flavorStrategylInst.addPodAddress(string memory assetSymbol, address podAddress, address priceFeedAddress)` with arguments the asset symbol to use for the pod, the contract address of the pod `podAddress`, and the [Chainlink price feed address](https://docs.chain.link/docs/reference-contracts) for the asset's USD price feed.
+5. For each instance of Pod Contract Call
 
-Repeat these steps for each prediction asset that should be supported.
+```
+flavorStrategylInst.addPodAddress(string memory assetSymbol, address podAddress, address priceFeedAddress)
+```
+
+For arguments use: the Pod asset symbol, the Pod contract address `podAddress`, and the [Chainlink price feed address](https://docs.chain.link/docs/reference-contracts) for the asset's USD price feed.
 
 ### Completing Prize Periods
 
