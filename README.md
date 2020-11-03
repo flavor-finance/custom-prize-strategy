@@ -41,9 +41,9 @@ const strategyContract = await flavorBuilderInst.createFlavorStrategy(prizeStrat
 
 There are now two contracts: a "proxy" contract that forwards transactions to an "implementation" contract, and the "implementation" contract that will be swapped for another contract when an upgrade takes place.
 
-The proxy contract address is `strategyContract.receipt.rawLogs[0].address`.
+The proxy contract address is `strategyContract.receipt.rawLogs[0].address`, save it as `strategyAddressProxy`
 
-The implementation contract address is `'0x' + strategyContract.receipt.rawLogs[0].data.slice(26)`. Use the proxy contract. Set the proxy contract address as `strategyAddress`, to allow the implementation to be easily updated later.
+The implementation contract address is `'0x' + strategyContract.receipt.rawLogs[0].data.slice(26)` save address as `strategyAddress`.
 
 ### Configure Prize Pool Strategy
 
@@ -51,7 +51,7 @@ Create Prize Pool using the `prizePoolAddress` and call `setPrizeStrategy` with 
 
 ```
 const prizePoolInst = await PrizePool.at(prizePoolAddress);
-prizePoolInst.setPrizeStrategy(strategyAddress);
+prizePoolInst.setPrizeStrategy(strategyAddress); //need to check both strategyAddress and strategyAddressProxy
 ```
 
 ### Deploy Pods and Configure Pod Addresses
@@ -73,12 +73,10 @@ To deploy a pod contract, complete the following steps. Don't forget to specify 
 
 4. Once the pod contract is deployed, get the deployed pod contract addresses in `migrations/deployedAddress`. Save it as `podAddress`
 
-5. Return to Flavor Strategy repository and run console. Derive link to FlavorStrategy contract:
+5. Return to Flavor Strategy repository and run console. Derive link to FlavorStrategy contract using `strategyAddress` obtained on previous step:
 
 ```
-const flavorProxyFactoryInst = await FlavorProxyFactory.deployed(); //Create link to Flavor Proxy Factory
-const flavorStragyAddress = await flavorProxyFactoryInst.instance();
-const flavorStrategylInst = await FlavorStrategy.at(flavorStragyAddress);
+const flavorStrategylInst = await FlavorStrategy.at(strategyAddress);
 ```
 
 5. For each instance of Pod Contract Call
@@ -92,67 +90,3 @@ For arguments use: the Pod asset symbol, the Pod contract address `podAddress`, 
 ### Completing Prize Periods
 
 The [flavor-finance](https://github.com/flavor-finance/flavor-finance) repository contains a web server setup to facilitate a daily cron job that calls the `completeAward` method, which calculates the winning pod and distributes the daily award to it, and creates the next prize period. In the event this web server is offline, this is a public method can can be successfully called by anyone so long as the prize period has ended.
-
----
-
-## Setup
-
-First clone the repository then run:
-
-```bash
-$ yarn
-```
-
-Copy over .envrc.example to .envrc
-
-```
-$ cp .envrc.example .envrc
-```
-
-Make sure to update the enviroment variables with suitable values. You'll want to administer any pools you create, so be sure to use a mnemonic that you used to create a prize pool.
-
-Now enable the env vars using [direnv](https://direnv.net/docs/installation.html)
-
-```
-$ direnv allow
-```
-
-### Setup PoolTogether Contracts as a separate project
-
-Clone the [PoolTogether Contracts](https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3) repository in another directory:
-
-```
-$ cd ..
-$ yarn clone git@github.com:pooltogether/pooltogether-pool-contracts.git
-$ cd pooltogether-pool-contracts
-$ git checkout version-3
-```
-
-Notice that we check out the `version-3` branch.
-
-**Follow the setup instruction in the [README](https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3)**
-
-Now start a local node:
-
-```
-$ yarn start
-```
-
-You should now have a local node running that is fully bootstrapped with:
-
-- PoolTogether contracts
-- Mock DAI
-- Mock Compound cDai
-- Mock yEarn yDAI Vault
-
-### Deploy the Custom Prize Strategy
-
-```
-$ yarn deploy-pt
-```
-
-This will compile and deploy the contracts against the local node started in the other project.
-
-### Test it out!
-
-Create a prize pool in the normal way, and then try swapping out the strategy!
