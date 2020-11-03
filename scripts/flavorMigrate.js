@@ -20,4 +20,4 @@ await flavorStrategylInst.completeAward("sf");
 const podAddress = "0xc17dd427fD5090bf84e677DaFf8f2EF11dde0B07";
 const ETHUSDFeed = "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e";
 
-flavorStrategylInst1.addPodAddress("ETH/USD", podAddress, ETHUSDFeed);
+flavorStrategylInst.addPodAddress("ETH/USD", podAddress, ETHUSDFeed);

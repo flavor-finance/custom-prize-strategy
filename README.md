@@ -79,7 +79,7 @@ To deploy a pod contract, complete the following steps. Don't forget to specify 
 const flavorStrategylInst = await FlavorStrategy.at(strategyAddress);
 ```
 
-5. For each instance of Pod Contract Call
+5. For each instance of the Pod Contract call the function
 
 ```
 flavorStrategylInst.addPodAddress(string memory assetSymbol, address podAddress, address priceFeedAddress)
