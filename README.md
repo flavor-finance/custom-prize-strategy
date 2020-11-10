@@ -1,8 +1,32 @@
 # Flavor Prize Strategy
 
-Flavor uses a prize strategy developed on top of the [PoolTogether V3](https://www.pooltogether.com/) protocol.
+Flavor is built on the[PoolTogether V3](https://www.pooltogether.com/) protocol.  It facilitates the depositing, withdrawal and yield earning of USDC as a `collateral asset` and uses Chainlink for retrieving an arbitrary number of `prediction asset` price feeds used to determine which group of FLAVOR token owners should be allocated the yield earned during a prize period taking place over a period of time such as one day or one week.
 
-It facilitates the depositing and withdrawal of USDC as a `collateral asset` and uses Chainlink for retrieving an arbitrary number of `prediction asset` price feeds. A pod contract address must be deployed and configured for each `prediction asset`.
+
+### Deployment Overview
+
+Setting up Flavor contracts consists of the following steps:
+
+* Deploy a PoolTogether [Prize Pool](https://github.com/pooltogether/pooltogether-pool-contracts). The Prize Pool contract allows funds to be pooled together into a no-loss yield source, such as Compound, and have the yield safely exposed to a separate Prize Strategy.  The Prize Pool can either be deployed via the [Builder application](https://builder.pooltogether.com/) or from the [project source code](https://github.com/pooltogether/pooltogether-pool-contracts).
+
+* Deploy and initialize a Flavor Prize Strategy contract and pass the address of the deployed prize strategy contract to the  `setPrizeStrategy` method of the previously deployed prize pool contract.
+
+* Deploy one or more [Pod contracts]((https://github.com/pooltogether/pooltogether-pod-contracts) with each pod corresponding to a `prediction asset` to be used in the prize period contest. Specify the address of the Prize Pool contract when initializing each pod, and use the PrizeStrategy `addPodAddress`  method to save the pod address and link it to a corresponding Chainlink price feed.
+
+* *Note*:  A `prediction asset` can be anything with a price feed - there is no need to interact for this system with a token address for a `prediction asset` if it does happen to be an Ethereum token.
+
+
+### Usage Overview
+
+
+* Use the `completeAward` method of the Flavor Prize Strategy contract to allocate rewards after a prize period has ended and setup a new prize period.
+
+* To mint FLAVOR tokens, approve USDC transfers to the Pod corresponding to a chosen `prediction asset`, and then use the `deposit` method of the Pod contract and specify the amount of USDC to exchange for shares represented by a FLAVOR token balance.
+
+* To exchange FLAVOR tokens for collateral, use the `redeemSharesInstantly` method and specify the number of shares to redeem.
+
+
+-----
 
 
 ## Deployment
@@ -14,9 +38,9 @@ Make sure to consistently specify which network is being used (i.e, `--network k
 
 ### Deploy Prize Pool Contract
 
-Refer to the [Pool Contracts Project Documentation](https://github.com/pooltogether/pooltogether-pool-contracts/tree/version-3) for detailed instructions on deploying.
+Refer to the [Pool Contracts Project Documentation](https://github.com/pooltogether/pooltogether-pool-contracts) for detailed instructions on deploying.
 
-The easiest way to quickly deploy a prize pool is using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to have the correct network selected. The Single Random Winner strategy will be used, and will be modified later.
+The easiest way to quickly deploy a prize pool is using the [Prize Pool Builder](https://builder.pooltogether.com/). Make sure to have the correct network and collateral type selected. The Single Random Winner strategy will be used, and will be modified later.
 
 Copy the prize pool address for reference in one of the next steps where it will be referred to as `prizePoolAddress`.
 
@@ -61,7 +85,7 @@ pool.setPrizeStrategy(strategyAddress)
 
 ### Deploy Pods and Configure Pod Addresses
 
-First, clone our fork of the [Pod Contracts repository](https://github.com/flavor-finance/pooltogether-pod-contracts) and edit the `scripts/migrate.js` script, setting the `POOL_USDC` address for the network you are using as the prize pool address from the first step.
+First, clone our fork of the [Pod Contracts repository](https://github.com/flavor-finance/pooltogether-pod-contracts) and edit the `scripts/migrate.js` script, setting the `poolAddress` address for the network you are using as the prize pool address from the first step.
 
 Run `yarn` to install dependencies.
 
@@ -80,7 +104,6 @@ To deploy a pod contract, complete the following steps:
 2. Once the pod contract is deployed, get the deployed pod contract address by opening `build/contracts/Pod.json` and finding the `address` property under the correct network in the `networks` object.
 
 3. Call `prizeStrategy.addPodAddress` with the asset symbol to use for the pod, the contract address of the pod, and the [Chainlink price feed address](https://docs.chain.link/docs/reference-contracts) for the asset's USD price feed.
-
 
 Repeat these three steps for each prediction asset that should be supported.
 
